@@ -108,13 +108,17 @@ def download_buzzheavier(input_str, episode=None, quality=None):
 
     if not hx_redirect:
         items = get_ids(url)
-        if quality:
-            items = episode_filter(items, episode, quality)
-        if not items:
+        
+        if quality or episode:
+            filtered_items = episode_filter(items, episode, quality)
+        else:
+            filtered_items = items
+        
+        if not filtered_items:
             logger.error(f"no matching items found for quality: {quality} and episode: {episode}")
             return
-
-        for item in items:
+        
+        for item in filtered_items:
             hx_redirect = get_download_url(item['id'])
             if not hx_redirect:
                 logger.error(f"no download link found for id: {item['id']}")
