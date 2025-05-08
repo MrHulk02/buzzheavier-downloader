@@ -2,7 +2,15 @@
 
 ## Simple downloader for filehosting service [BuzzHeavier](https://buzzheavier.com/), written in Python.
 
-Supports batch downloads from a text file, and all [BuzzHeavier mirrors](https://buzzheavier.com/proxy).
+---
+## Features
+
+- Supports multiple mirror domains: `buzzheavier.com`, `bzzhr.co`, `fuckingfast.net`, `fuckingfast.co`
+- Download single files or full episode lists (folder links)
+- Filter by video quality: `540p`, `720p`, or `1080p`
+- Select individual episodes or ranges (e.g. `-e 1-5`)
+- Displays download progress bar with `tqdm`
+- Skips files that have already been downloaded
 
 ---
 
@@ -22,10 +30,7 @@ pip install requests beautifulsoup4 tqdm
 
 ## Usage
 
-### 1. Download by ID or URL
-
-> [!WARNING]  
-> This tool does not yet support downloading from directories, only files.
+### Download a Single File or Folder Link
 
 ```bash
 python3 bhdownload.py <id_or_url>
@@ -34,37 +39,26 @@ python3 bhdownload.py <id_or_url>
 **Examples:**
 
 ```bash
-python3 bhdownload.py https://buzzheavier.com/x7v9k2mqp4zt
 python3 bhdownload.py x7v9k2mqp4zt
+python3 bhdownload.py https://buzzheavier.com/x7v9k2mqp4zt
+python3 bhdownload.py https://buzzheavier.com/xyzfolder123 -e 2-4 -q 720p
 ```
 
-### 2. Batch Download from a Text File
-
-Prepare a text file (`input.txt`) with one ID or full URL per line:
-
-```
-x7v9k2mqp4zt
-https://bzzhr.co/x7v9k2mqp4zt
-https://buzzheavier.com/x7v9k2mqp4zt
-```
-
-Then run:
-
-```bash
-python3 bhdownload.py -f input.txt
-```
 
 ---
 
-## Debug Info
-
-The script prints the following debug info:
-
-- `[DEBUG] Title:` shows the filename it will use.
-- `[DEBUG] Download link:` shows the internal redirect used to fetch the actual file.
-- Download progress bar.
+| Option            | Description                                  |
+| ----------------- | -------------------------------------------- |
+| `-e`, `--episode` | Episode number or range (e.g., `3` or `1-5`) |
+| `-q`, `--quality` | Video quality: `540p`, `720p`, or `1080p`    |
+| `-d`, `--debug`   | Enable debug logging                         |
 
 ---
+## Output
+
+- Files are saved to `downloads/<title>/`
+- Temporary files are stored in `temp/` during the download process
+- Skips files that have already been downloaded
 
 ## Notes
 
