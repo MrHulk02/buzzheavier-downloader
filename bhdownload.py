@@ -152,8 +152,8 @@ def main():
     parser = argparse.ArgumentParser(description='buzzheavier downloader')
     parser.add_argument('input', help='id or url to download')
     parser.add_argument('-d', '--debug', action='store_true', help='debug logging')
-    parser.add_argument('-e', '--episode', type=str, help='specific episode or range of episode to process. eg(1 or 1-5)')
-    parser.add_argument('-q', '--quality', choices=QUALITY_CHOICES, help='video quality')
+    parser.add_argument('-e', '--episode', type=str, help='specific episode or range of episodes to process (e.g., "1" or "1-5")')
+    parser.add_argument('-q', '--quality', choices=QUALITY_CHOICES, default="720p", help='video quality')
 
     args = parser.parse_args()
 
