@@ -23,6 +23,9 @@
 Install dependencies:
 
 ```bash
+pip install -r requirements.txt
+```
+```bash
 pip install requests beautifulsoup4 tqdm
 ```
 
@@ -46,6 +49,7 @@ python3 bhdownload.py https://buzzheavier.com/xyzfolder123 -e 2-4 -q 720p
 
 
 ---
+## CLI Options
 
 | Option            | Description                                  |
 | ----------------- | -------------------------------------------- |
