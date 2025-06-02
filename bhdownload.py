@@ -10,7 +10,9 @@ VALID_DOMAINS = [
     'buzzheavier.com',
     'bzzhr.co',
     'fuckingfast.net',
-    'fuckingfast.co'
+    'fuckingfast.co',
+    'flashbang.sh',
+    'trashbytes.net',
 ]
 
 QUALITY_CHOICES = ['540p', '720p', '1080p']
@@ -67,6 +69,9 @@ def episode_filter(items, episodes, quality):
         and (not episodes or item['episode'] in [f"{ep:02}" for ep in episodes])
     ]
 
+def sanitize_name(name):
+    return re.sub(r'[<>:"/\\|?*]', '', name)
+
 def download_file(title, final_url, foldertitle=None):
     if foldertitle:
         down_path = os.path.join("downloads", foldertitle)
@@ -101,7 +106,7 @@ def download_buzzheavier(input_str, episode=None, quality=None):
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
-    title = soup.title.string.strip()
+    title = sanitize_name(soup.title.string.strip())
     logger.info(f"Title: {title}")
 
     hx_redirect = get_download_url(url)
@@ -126,7 +131,7 @@ def download_buzzheavier(input_str, episode=None, quality=None):
 
             domain = url.split('/')[2]
             final_url = f'https://{domain}{hx_redirect}' if not hx_redirect.startswith('http') else hx_redirect
-            download_file(item['title'], final_url, title)
+            download_file(sanitize_name(item['title']), final_url, title)
     else:
         domain = url.split('/')[2]
         final_url = f'https://{domain}{hx_redirect}' if not hx_redirect.startswith('http') else hx_redirect
