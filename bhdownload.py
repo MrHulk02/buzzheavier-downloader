@@ -99,11 +99,13 @@ def download_file(title, final_url, foldertitle=None):
         logger.info(f"{title} already downloaded")
         return
     
-    file_response = requests.get(final_url, stream=True)
+    temp_file = os.path.join(temp_path, f"{title}.part.{os.getpid()}")
+
+    file_response = requests.get(final_url, stream=True, timeout=60)
     file_response.raise_for_status()
     total_size = int(file_response.headers.get('content-length', 0))
     block_size = 1024
-    with open(os.path.join(temp_path, title), 'wb') as f, tqdm(
+    with open(temp_file, 'wb') as f, tqdm(
         total=total_size, unit='B', unit_scale=True, desc=title
     ) as progress_bar:
         for chunk in file_response.iter_content(chunk_size=block_size):
@@ -111,7 +113,7 @@ def download_file(title, final_url, foldertitle=None):
                 f.write(chunk)
                 progress_bar.update(len(chunk))
 
-    os.replace(os.path.join(temp_path, title), os.path.join(down_path, title))
+    os.replace(temp_file, os.path.join(down_path, title))
 
 def download_buzzheavier(input_str, episode=None, quality=None, fallback_quality=False):
     url = resolve_url(input_str)
