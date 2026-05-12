@@ -163,13 +163,22 @@ def parse_episode(ep_range):
     except ValueError:
         logger.error(f'invalid range format: "{ep_range}"')
         return None
+
+def parse_quality(quality):
+    quality = quality.lower()
+    if quality in ['540', '720', '1080']:
+        quality = f'{quality}p'
+    if quality not in QUALITY_CHOICES:
+        raise argparse.ArgumentTypeError(f"invalid choice: '{quality}' (choose from 540p, 720p, 1080p)")
+    return quality
     
 def main():
     parser = argparse.ArgumentParser(description='buzzheavier downloader')
+    parser.add_argument('-?', action='help', help='show this help message and exit')
     parser.add_argument('input', help='id or url to download')
     parser.add_argument('-d', '--debug', action='store_true', help='debug logging')
     parser.add_argument('-e', '--episode', type=str, help='specific episode or range of episodes to process (e.g., "1" or "1-5")')
-    parser.add_argument('-q', '--quality', choices=QUALITY_CHOICES, default="720p", help='video quality')
+    parser.add_argument('-q', '--quality', type=parse_quality, default="720p", metavar='QUALITY', help='video quality: 540/720/1080 or 540p/720p/1080p')
 
     args = parser.parse_args()
 
