@@ -121,7 +121,7 @@ def download_buzzheavier(input_str, episode=None, quality=None, fallback_quality
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
     title = sanitize_name(soup.title.string.strip())
-    logger.info(f"Title: {title}")
+    logger.info(f"Folder Title: {title}")
 
     hx_redirect = get_download_url(url)
 
