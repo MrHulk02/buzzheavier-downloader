@@ -112,7 +112,7 @@ def download_file(title, final_url, foldertitle=None):
 
     os.replace(os.path.join(temp_path, title), os.path.join(down_path, title))
 
-def download_buzzheavier(input_str, episode=None, quality=None):
+def download_buzzheavier(input_str, episode=None, quality=None, fallback_quality=False):
     url = resolve_url(input_str)
     response = requests.get(url)
     response.raise_for_status()
@@ -129,6 +129,10 @@ def download_buzzheavier(input_str, episode=None, quality=None):
             filtered_items = episode_filter(items, episode, quality)
         else:
             filtered_items = items
+
+        if not filtered_items and fallback_quality and quality:
+            logger.info(f"no matching items found for default quality: {quality}, using available quality")
+            filtered_items = episode_filter(items, episode, None)
         
         if not filtered_items:
             logger.error(f"no matching items found for quality: {quality} and episode: {episode}")
@@ -178,7 +182,7 @@ def main():
     parser.add_argument('input', help='id or url to download')
     parser.add_argument('-d', '--debug', action='store_true', help='debug logging')
     parser.add_argument('-e', '--episode', type=str, help='specific episode or range of episodes to process (e.g., "1" or "1-5")')
-    parser.add_argument('-q', '--quality', type=parse_quality, default="720p", metavar='QUALITY', help='video quality: 540/720/1080 or 540p/720p/1080p')
+    parser.add_argument('-q', '--quality', type=parse_quality, metavar='QUALITY', help='video quality: 540/720/1080 or 540p/720p/1080p')
 
     args = parser.parse_args()
 
@@ -186,7 +190,8 @@ def main():
         logger.setLevel(logging.DEBUG)
 
     try:
-        download_buzzheavier(args.input, parse_episode(args.episode), args.quality)
+        quality = args.quality or "720p"
+        download_buzzheavier(args.input, parse_episode(args.episode), quality, fallback_quality=not args.quality)
     except Exception as e:
         logger.error(f"failed to download {args.input}: {e}")
 
