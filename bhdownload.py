@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import logging
 from tqdm import tqdm
 import argparse
+from urllib.parse import urljoin
 
 VALID_DOMAINS = [
     'buzzheavier.com',
@@ -35,7 +36,17 @@ def resolve_url(input_str):
 def get_download_url(url):
     if not url.startswith('http'):
         url = f'https://{VALID_DOMAINS[0]}/{url}'
-    download_url = url + '/download'
+
+    response = requests.get(url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'html.parser')
+    download_link = soup.find('a', attrs={'hx-get': re.compile(r'/download\?t=')})
+
+    if download_link:
+        download_url = urljoin(url, download_link['hx-get'])
+    else:
+        download_url = url + '/download'
+
     headers = {
         'hx-current-url': url,
         'hx-request': 'true',
@@ -53,8 +64,8 @@ def get_ids(url):
     for link in soup.find_all('a', href=True):
         href = link['href']
         if len(href) == 13:
-            episode_match = re.search(r'\.E(\d{2})\.', link.get_text(strip=True))
-            episode = episode_match.group(1) if episode_match else None
+            episode_match = re.search(r'(?:S\d{1,2})?E(\d{2,3})(?:[.\s_-])', link.get_text(strip=True))
+            episode = episode_match.group(1).lstrip('0').zfill(2) if episode_match else None
             items.append({
                 'id': href[1:],
                 'title': link.get_text(strip=True),
