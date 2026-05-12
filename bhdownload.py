@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 VALID_DOMAINS = [
     'buzzheavier.com',
     'bzzhr.co',
+    'bzzhr.to',
     'fuckingfast.net',
     'fuckingfast.co',
     'flashbang.sh',
